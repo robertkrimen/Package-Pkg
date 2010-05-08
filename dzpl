@@ -7,6 +7,8 @@ use Dzpl
     copyright => 'Robert Krimen',
 
     require => q/
+        Sub::Install
+
         [Test]
         Test::Most
     /;
