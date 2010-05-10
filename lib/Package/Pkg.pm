@@ -1,5 +1,61 @@
 package Package::Pkg;
-# ABSTRACT: Package::Pkg! Package::Pkg!
+# ABSTRACT: Handy package munging utilities
+
+=head1 SYNOPSIS
+
+First, import a new keyword: C<pkg>
+
+    use Package::Pkg;
+
+Subroutine installation:
+
+    pkg->install( sub { ... } => 'MyPackage::myfunction' );
+
+    # myfunction in MyPackage is now useable
+    MyPackage->myfunction( ... );
+
+Subroutine exporting:
+
+    package MyPackage;
+
+    use Package::Pkg;
+
+    sub this { ... }
+
+    # Setup an exporter for MyPackage, exporting 'this' and 'that'
+    pkg->export( that => sub { ... }, 'this' );
+
+    package main;
+
+    use MyPackage;
+
+    this( ... );
+
+    that( ... );
+
+=head1 DESCRIPTION
+
+Package::Pkg is a collection of useful, miscellaneous package-munging utilities. Functionality is accessed via the imported C<pkg> keyword, although you can also invoke functions directly from the package (C<Package::Pkg>)
+
+=head1 USAGE
+
+=head2 install
+
+Install a subroutine, similar to L<Sub::Install> (and actually using that module to do the dirty work)
+
+=head2 export( ... )
+
+Setup an importer in the calling package
+
+=head1 SEE ALSO
+
+L<Sub::Install>
+
+L<Sub::Exporter>
+
+L<Class::MOP>
+
+=cut
 
 use strict;
 use warnings;

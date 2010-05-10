@@ -1,8 +1,60 @@
 NAME
-    Package::Pkg - Package::Pkg! Package::Pkg!
+    Package::Pkg - Handy package munging utilities
 
 VERSION
     version 0.0010
+
+SYNOPSIS
+    First, import a new keyword: "pkg"
+
+        use Package::Pkg;
+
+    Subroutine installation:
+
+        pkg->install( sub { ... } => 'MyPackage::myfunction' );
+
+        # myfunction in MyPackage is now useable
+        MyPackage->myfunction( ... );
+
+    Subroutine exporting:
+
+        package MyPackage;
+
+        use Package::Pkg;
+
+        sub this { ... }
+
+        # Setup an exporter for MyPackage, exporting 'this' and 'that'
+        pkg->export( that => sub { ... }, 'this' );
+
+        package main;
+
+        use MyPackage;
+
+        this( ... );
+
+        that( ... );
+
+DESCRIPTION
+    Package::Pkg is a collection of useful, miscellaneous package-munging
+    utilities. Functionality is accessed via the imported "pkg" keyword,
+    although you can also invoke functions directly from the package
+    ("Package::Pkg")
+
+USAGE
+  install
+    Install a subroutine, similar to Sub::Install (and actually using that
+    module to do the dirty work)
+
+  export( ... )
+    Setup an importer in the calling package
+
+SEE ALSO
+    Sub::Install
+
+    Sub::Exporter
+
+    Class::MOP
 
 AUTHOR
       Robert Krimen <robertkrimen@gmail.com>
