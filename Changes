@@ -1,2 +1,5 @@
+0.0011 Monday May 10 12:35:28 PDT 2010:
+    - Include Class::MOP as a prerequisite
+
 0.0010 Monday May 10 12:15:00 PDT 2010:
-    Initial release
+    - Initial release
