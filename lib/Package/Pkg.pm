@@ -164,7 +164,8 @@ sub exporter {
         my $name = $_;
 
         push @install, $name;
-        if ( ref $_[0] eq 'CODE' ) { push @install, shift }
+        if      ( ref $_[0] eq 'CODE' ) { push @install, shift }
+        elsif   ( $_[0] =~ s/^<// )     { push @install, shift }
 
         push @{ $group{$group} ||= [] }, $name;
         $index{$name} = \@install;
@@ -187,7 +188,9 @@ sub exporter {
 
         for my $name ( @exporting ) {
             my $install = $index{$name} or die "Unrecognized export ($name)";
-            __PACKAGE__->install( as => $install->[0], code => $install->[1], into => $package );
+            my $as = $install->[0];
+            my $code = $install->[1] || "${class}::$as";
+            __PACKAGE__->install( as => $as, code => $code, into => $package );
         }
     };
 
