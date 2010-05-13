@@ -59,10 +59,13 @@ USAGE
 
         pkg->package( 'Xyzzy', 'Apple::' ) # 'Xyzzy::Apple::
     
-        package Cherry;
-        pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
+        {
+            package Cherry;
 
-        pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+            pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
+
+            pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+        }
 
   export( ... )
     Setup an importer in the calling package

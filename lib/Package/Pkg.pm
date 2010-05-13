@@ -51,14 +51,15 @@ Superfluous/redundant C<::> are automatically cleaned up and stripped from the r
 
 If the first part leads with a C<::>, the the calling package will be prepended to $package
 
-    pkg->package( 'Xyzzy', 'Apple::', '::Banana' ) # 'Xyzzy::Apple::Banana' 
-
-    pkg->package( 'Xyzzy', 'Apple::' ) # 'Xyzzy::Apple::
+    pkg->package( 'Xy', 'A::', '::B' )  # Xy::A::B
+    pkg->package( 'Xy', 'A::' )         # Xy::A::
     
-    package Cherry;
-    pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
+    {
+        package Zy;
 
-    pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+        pkg->package( '::', 'A::', '::B' )  # Zy::A::B
+        pkg->package( '::Xy::A::B' )        # Zy::Xy::A::B
+    }
 
 =head2 export( ... )
 
