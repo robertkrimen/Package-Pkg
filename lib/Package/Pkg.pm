@@ -43,9 +43,28 @@ Package::Pkg is a collection of useful, miscellaneous package-munging utilities.
 
 Install a subroutine, similar to L<Sub::Install> (and actually using that module to do the dirty work)
 
+=head2 $package = package( <part>, [ <part>, ..., <part> ] )
+
+Return a namespace composed by joining each <part> with C<::>
+
+Superfluous/redundant C<::> are automatically cleaned up and stripped from the resulting $package
+
+If the first part leads with a C<::>, the the calling package will be prepended to $package
+
+    pkg->package( 'Xyzzy', 'Apple::', '::Banana' ) # 'Xyzzy::Apple::Banana' 
+
+    pkg->package( 'Xyzzy', 'Apple::' ) # 'Xyzzy::Apple::
+    
+    package Cherry;
+    pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
+
+    pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+
 =head2 export( ... )
 
 Setup an importer in the calling package
+
+Under construction
 
 =head1 SEE ALSO
 
@@ -62,6 +81,22 @@ use warnings;
 
 require Class::MOP;
 require Sub::Install;
+
+our $pkg = __PACKAGE__;
+sub pkg { $pkg }
+__PACKAGE__->export( pkg => \&pkg );
+
+sub package {
+    my $self = shift;
+    my $package = join '::', @_;
+    $package =~ s/:{2,}/::/g;
+    return '' if $package eq '::';
+    if ( $package =~ m/^::/ ) {
+        my $caller = caller;
+        $package = "$caller$package";
+    }
+    return $package;
+}
 
 # pkg->install( name => sub { ... } => 
 sub install {
@@ -125,12 +160,6 @@ sub split2 {
     my $name = pop @split;
     return( join( '::', @split ), $name );
 }
-
-our $pkg = __PACKAGE__;
-
-sub pkg { $pkg }
-
-__PACKAGE__->export( pkg => \&pkg );
 
 sub load {
     my $self = shift;

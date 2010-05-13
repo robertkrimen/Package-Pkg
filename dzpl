@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Dzpl
     name => 'Package-Pkg',
-    version => '0.0011',
+    version => '0.0012',
     author => 'Robert Krimen <robertkrimen@gmail.com>',
     license => 'Perl5',
     copyright => 'Robert Krimen',
@@ -14,6 +14,4 @@ use Dzpl
     /;
 ;
 
-{ plugin '@ROKR::Basic' }
-
-run;
+{ plugin '@ROKR' }

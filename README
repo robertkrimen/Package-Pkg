@@ -2,7 +2,7 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0011
+    version 0.0012
 
 SYNOPSIS
     First, import a new keyword: "pkg"
@@ -46,8 +46,28 @@ USAGE
     Install a subroutine, similar to Sub::Install (and actually using that
     module to do the dirty work)
 
+  $package = package( <part>, [ <part>, ..., <part> ] )
+    Return a namespace composed by joining each <part> with "::"
+
+    Superfluous/redundant "::" are automatically cleaned up and stripped
+    from the resulting $package
+
+    If the first part leads with a "::", the the calling package will be
+    prepended to $package
+
+        pkg->package( 'Xyzzy', 'Apple::', '::Banana' ) # 'Xyzzy::Apple::Banana' 
+
+        pkg->package( 'Xyzzy', 'Apple::' ) # 'Xyzzy::Apple::
+    
+        package Cherry;
+        pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
+
+        pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+
   export( ... )
     Setup an importer in the calling package
+
+    Under construction
 
 SEE ALSO
     Sub::Install
