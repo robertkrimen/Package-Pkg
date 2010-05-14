@@ -7,6 +7,11 @@ First, import a new keyword: C<pkg>
 
     use Package::Pkg;
 
+Package name formation:
+
+    pkg->package( 'Xy', 'A' ) # Xy::A
+    pkg->package( $object, qw/ Cfg / ); # (ref $object)::Cfg
+
 Subroutine installation:
 
     pkg->install( sub { ... } => 'MyPackage::myfunction' );
@@ -22,7 +27,8 @@ Subroutine exporting:
 
     sub this { ... }
 
-    # Setup an exporter for MyPackage, exporting 'this' and 'that'
+    # Setup an exporter (literally sub import { ... }) for
+    # MyPackage, exporting 'this' and 'that'
     pkg->export( that => sub { ... }, 'this' );
 
     package main;
@@ -51,8 +57,8 @@ Superfluous/redundant C<::> are automatically cleaned up and stripped from the r
 
 If the first part leads with a C<::>, the the calling package will be prepended to $package
 
-    pkg->package( 'Xy', 'A::', '::B' )  # Xy::A::B
-    pkg->package( 'Xy', 'A::' )         # Xy::A::
+    pkg->package( 'Xy', 'A::', '::B' )      # Xy::A::B
+    pkg->package( 'Xy', 'A::' )             # Xy::A::
     
     {
         package Zy;
@@ -60,6 +66,11 @@ If the first part leads with a C<::>, the the calling package will be prepended 
         pkg->package( '::', 'A::', '::B' )  # Zy::A::B
         pkg->package( '::Xy::A::B' )        # Zy::Xy::A::B
     }
+
+In addition, if any part is blessed, C<package> will resolve that part to the package that the part makes reference to:
+
+    my $object = bless {}, 'Xyzzy';
+    pkg->package( $object, qw/ Cfg / );     # Xyzzy::Cfg
 
 =head2 export( ... )
 
@@ -89,7 +100,7 @@ __PACKAGE__->export( pkg => \&pkg );
 
 sub package {
     my $self = shift;
-    my $package = join '::', @_;
+    my $package = join '::', map { ref $_ ? ref $_ : $_ } @_;
     $package =~ s/:{2,}/::/g;
     return '' if $package eq '::';
     if ( $package =~ m/^::/ ) {

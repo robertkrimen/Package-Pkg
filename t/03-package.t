@@ -24,3 +24,10 @@ is( pkg->package( 'Xy', 'A::' ), 'Xy::A::' );
     is( pkg->package( '::', 'A::', '::B' ), 'Zy::A::B' );
     is( pkg->package( '::Xy::A::B' ), 'Zy::Xy::A::B' );
 }
+
+my $zy = bless {}, 'Zy';
+
+is( pkg->package( $zy, 'A::', '::B' ), 'Zy::A::B' );
+is( pkg->package( $zy, 'Xy::A::B' ), 'Zy::Xy::A::B' );
+is( pkg->package( $zy, 'Xy::A::B', {} ), 'Zy::Xy::A::B::HASH' );
+

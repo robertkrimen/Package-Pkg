@@ -1,3 +1,6 @@
+0.0013 Thursday May 13 17:48:00 PDT 2010:
+    - ->package can now deal with the blessed
+
 0.0012 Thursday May 13 16:46:13 PDT 2010:
     - Added ->package functionality
 

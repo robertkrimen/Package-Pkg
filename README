@@ -2,12 +2,17 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0012
+    version 0.0013
 
 SYNOPSIS
     First, import a new keyword: "pkg"
 
         use Package::Pkg;
+
+    Package name formation:
+
+        pkg->package( 'Xy', 'A' ) # Xy::A
+        pkg->package( $object, qw/ Cfg / ); # (ref $object)::Cfg
 
     Subroutine installation:
 
@@ -24,7 +29,8 @@ SYNOPSIS
 
         sub this { ... }
 
-        # Setup an exporter for MyPackage, exporting 'this' and 'that'
+        # Setup an exporter (literally sub import { ... }) for
+        # MyPackage, exporting 'this' and 'that'
         pkg->export( that => sub { ... }, 'this' );
 
         package main;
@@ -55,17 +61,21 @@ USAGE
     If the first part leads with a "::", the the calling package will be
     prepended to $package
 
-        pkg->package( 'Xyzzy', 'Apple::', '::Banana' ) # 'Xyzzy::Apple::Banana' 
-
-        pkg->package( 'Xyzzy', 'Apple::' ) # 'Xyzzy::Apple::
+        pkg->package( 'Xy', 'A::', '::B' )      # Xy::A::B
+        pkg->package( 'Xy', 'A::' )             # Xy::A::
     
         {
-            package Cherry;
+            package Zy;
 
-            pkg->package( '::', 'Apple::', '::Banana' ) # 'Cherry::Apple::Banana'
-
-            pkg->package( '::Xyzzy::A::B' ) # 'Cherry::Xyzzy::A::B'
+            pkg->package( '::', 'A::', '::B' )  # Zy::A::B
+            pkg->package( '::Xy::A::B' )        # Zy::Xy::A::B
         }
+
+    In addition, if any part is blessed, "package" will resolve that part to
+    the package that the part makes reference to:
+
+        my $object = bless {}, 'Xyzzy';
+        pkg->package( $object, qw/ Cfg / );     # Xyzzy::Cfg
 
   export( ... )
     Setup an importer in the calling package
