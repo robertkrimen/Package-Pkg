@@ -98,7 +98,9 @@ our $pkg = __PACKAGE__;
 sub pkg { $pkg }
 __PACKAGE__->export( pkg => \&pkg );
 
-sub package {
+*package = \&name;
+
+sub name {
     my $self = shift;
     my $package = join '::', map { ref $_ ? ref $_ : $_ } @_;
     $package =~ s/:{2,}/::/g;
@@ -108,6 +110,19 @@ sub package {
         $package = "$caller$package";
     }
     return $package;
+}
+
+sub load_name {
+    my $self = shift;
+    my $package = $self->name( @_ );
+    $self->load( $package );
+    return $package;
+}
+
+sub load {
+    my $self = shift;
+    my ( $package ) = @_;
+    return Class::MOP::load_class( $package );
 }
 
 # pkg->install( name => sub { ... } => 
@@ -171,12 +186,6 @@ sub split2 {
     return join '::', @split if 1 == @split;
     my $name = pop @split;
     return( join( '::', @split ), $name );
-}
-
-sub load {
-    my $self = shift;
-    my ( $package ) = @_;
-    return Class::MOP::load_class( $package );
 }
 
 sub export {
