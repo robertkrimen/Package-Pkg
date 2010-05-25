@@ -93,12 +93,17 @@ use warnings;
 
 require Class::MOP;
 require Sub::Install;
+use Try::Tiny;
+use Carp;
 
 our $pkg = __PACKAGE__;
 sub pkg { $pkg }
 __PACKAGE__->export( pkg => \&pkg );
 
-*package = \&name;
+{
+    no warnings 'once';
+    *package = \&name;
+}
 
 sub name {
     my $self = shift;
@@ -119,10 +124,47 @@ sub load_name {
     return $package;
 }
 
+sub _is_package_loaded ($) { return Class::MOP::is_class_loaded( $_[0] ) }
+
+sub _package2pm ($) {
+    my $package = shift;
+    my $pm = $package . '.pm';
+    $pm =~ s{::}{/}g;
+    return $pm;
+}
+
+sub loader {
+    my $self = shift;
+    require Package::Pkg::Loader;
+    my $namespacelist = ref $_[0] eq 'ARRAY' ? shift : [ splice @_, 0, @_ ];
+    Package::Pkg::Loader->new( namespacelist => $namespacelist, @_ );
+}
+
 sub load {
     my $self = shift;
-    my ( $package ) = @_;
+    my $package = @_ > 1 ? $self->name( @_ ) : $_[0];
     return Class::MOP::load_class( $package );
+}
+
+sub softload {
+    my $self = shift;
+    my $package = @_ > 1 ? $self->name( @_ ) : $_[0];
+    
+    return $package if _is_package_loaded( $package );
+
+    my $pm = _package2pm $package;
+
+    return $package if try {
+        local $SIG{__DIE__};
+        require $pm;
+        return 1;
+    }
+    catch {
+        unless (/^Can't locate \Q$pm\E in \@INC/) {
+            confess "Couldn't load package ($package) because: $_";
+        }
+        return;
+    };
 }
 
 # pkg->install( name => sub { ... } => 
