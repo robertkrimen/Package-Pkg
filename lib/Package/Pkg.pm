@@ -256,8 +256,10 @@ sub exporter {
         my $name = $_;
 
         push @install, $name;
-        if      ( ref $_[0] eq 'CODE' ) { push @install, shift }
-        elsif   ( $_[0] =~ s/^<// )     { push @install, shift }
+        if ( @_ ) {
+            if      ( ref $_[0] eq 'CODE' ) { push @install, shift }
+            elsif   ( $_[0] =~ s/^<// )     { push @install, shift }
+        }
 
         push @{ $group{$group} ||= [] }, $name;
         $index{$name} = \@install;
