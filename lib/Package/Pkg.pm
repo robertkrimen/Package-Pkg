@@ -254,8 +254,10 @@ sub exporter {
 
         push @install, $name;
         if ( @_ ) {
-            if      ( ref $_[0] eq 'CODE' ) { push @install, shift }
-            elsif   ( $_[0] =~ s/^<// )     { push @install, shift }
+            my $value = shift;
+            if      ( ref $value eq 'CODE' ) { push @install, $value }
+            elsif   ( $value =~ s/^<// )     { push @install, $value }
+            else                             { unshift @_, $value }
         }
 
         push @{ $group{$group} ||= [] }, $name;

@@ -2,7 +2,7 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0014
+    version 0.0015
 
 SYNOPSIS
     First, import a new keyword: "pkg"

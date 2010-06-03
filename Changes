@@ -1,3 +1,6 @@
+0.0015 Thursday June 03 09:24:33 PDT 2010:
+    - Fixed bug with exporting <.* (modification of read-only value)
+
 0.0014 Wednesday June 02 18:54:53 PDT 2010:
     - Added stealth _into option to ->install (Usaginator)
     - Added loader
