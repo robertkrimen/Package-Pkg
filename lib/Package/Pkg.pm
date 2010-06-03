@@ -57,20 +57,20 @@ Superfluous/redundant C<::> are automatically cleaned up and stripped from the r
 
 If the first part leads with a C<::>, the the calling package will be prepended to $package
 
-    pkg->package( 'Xy', 'A::', '::B' )      # Xy::A::B
-    pkg->package( 'Xy', 'A::' )             # Xy::A::
+    pkg->name( 'Xy', 'A::', '::B' )      # Xy::A::B
+    pkg->name( 'Xy', 'A::' )             # Xy::A::
     
     {
         package Zy;
 
-        pkg->package( '::', 'A::', '::B' )  # Zy::A::B
-        pkg->package( '::Xy::A::B' )        # Zy::Xy::A::B
+        pkg->name( '::', 'A::', '::B' )  # Zy::A::B
+        pkg->name( '::Xy::A::B' )        # Zy::Xy::A::B
     }
 
-In addition, if any part is blessed, C<package> will resolve that part to the package that the part makes reference to:
+In addition, if any part is blessed, C<name> will resolve that part to the package that the part makes reference to:
 
     my $object = bless {}, 'Xyzzy';
-    pkg->package( $object, qw/ Cfg / );     # Xyzzy::Cfg
+    pkg->name( $object, qw/ Cfg / );     # Xyzzy::Cfg
 
 =head1 SEE ALSO
 
