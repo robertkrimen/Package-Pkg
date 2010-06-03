@@ -2,7 +2,7 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0013
+    version 0.0014
 
 SYNOPSIS
     First, import a new keyword: "pkg"
@@ -11,8 +11,8 @@ SYNOPSIS
 
     Package name formation:
 
-        pkg->package( 'Xy', 'A' ) # Xy::A
-        pkg->package( $object, qw/ Cfg / ); # (ref $object)::Cfg
+        pkg->name( 'Xy', 'A' ) # Xy::A
+        pkg->name( $object, qw/ Cfg / ); # (ref $object)::Cfg
 
     Subroutine installation:
 
@@ -48,11 +48,11 @@ DESCRIPTION
     ("Package::Pkg")
 
 USAGE
-  install
+  pkg->install( ... )
     Install a subroutine, similar to Sub::Install (and actually using that
     module to do the dirty work)
 
-  $package = package( <part>, [ <part>, ..., <part> ] )
+  $package = pkg->name( <part>, [ <part>, ..., <part> ] )
     Return a namespace composed by joining each <part> with "::"
 
     Superfluous/redundant "::" are automatically cleaned up and stripped
@@ -76,11 +76,6 @@ USAGE
 
         my $object = bless {}, 'Xyzzy';
         pkg->package( $object, qw/ Cfg / );     # Xyzzy::Cfg
-
-  export( ... )
-    Setup an importer in the calling package
-
-    Under construction
 
 SEE ALSO
     Sub::Install

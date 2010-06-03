@@ -9,8 +9,8 @@ First, import a new keyword: C<pkg>
 
 Package name formation:
 
-    pkg->package( 'Xy', 'A' ) # Xy::A
-    pkg->package( $object, qw/ Cfg / ); # (ref $object)::Cfg
+    pkg->name( 'Xy', 'A' ) # Xy::A
+    pkg->name( $object, qw/ Cfg / ); # (ref $object)::Cfg
 
 Subroutine installation:
 
@@ -45,11 +45,11 @@ Package::Pkg is a collection of useful, miscellaneous package-munging utilities.
 
 =head1 USAGE
 
-=head2 install
+=head2 pkg->install( ... )
 
 Install a subroutine, similar to L<Sub::Install> (and actually using that module to do the dirty work)
 
-=head2 $package = package( <part>, [ <part>, ..., <part> ] )
+=head2 $package = pkg->name( <part>, [ <part>, ..., <part> ] )
 
 Return a namespace composed by joining each <part> with C<::>
 
@@ -71,12 +71,6 @@ In addition, if any part is blessed, C<package> will resolve that part to the pa
 
     my $object = bless {}, 'Xyzzy';
     pkg->package( $object, qw/ Cfg / );     # Xyzzy::Cfg
-
-=head2 export( ... )
-
-Setup an importer in the calling package
-
-Under construction
 
 =head1 SEE ALSO
 
@@ -176,7 +170,7 @@ sub install {
     elsif   ( @_ == 3 ) { @install{qw/ code into as /} = @_ }
     else                { %install = @_ }
 
-    my ( $from, $code, $into, $as ) = @install{qw/ from code into as /};
+    my ( $from, $code, $into, $_into, $as, ) = @install{qw/ from code into _into as /};
     undef %install;
 
     die "Missing code" unless defined $code;
@@ -202,6 +196,9 @@ sub install {
         else {
             ( $into, $as ) = $self->split2( $into );
         }
+    }
+    elsif ( defined $_into && ! defined $into ) {
+        $into = $_into;
     }
 
     if      ( defined $as ) {}

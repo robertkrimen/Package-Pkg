@@ -1,3 +1,9 @@
+0.0014 Wednesday June 02 18:54:53 PDT 2010:
+    - Added stealth _into option to ->install (Usaginator)
+    - Added loader
+    - Fixed bug with exporter
+    - ->package is now ->name
+
 0.0013 Thursday May 13 17:48:00 PDT 2010:
     - ->package can now deal with the blessed
 
