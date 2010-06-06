@@ -1,13 +1,14 @@
 #!/usr/bin/env perl
 use Dzpl
     name => 'Package-Pkg',
-    version => '0.0015',
+    version => '0.0016',
     author => 'Robert Krimen <robertkrimen@gmail.com>',
     license => 'Perl5',
     copyright => 'Robert Krimen',
     require => q/
+        Mouse
         Sub::Install
-        Class::MOP
+        Try::Tiny
 
         [Test]
         Test::Most

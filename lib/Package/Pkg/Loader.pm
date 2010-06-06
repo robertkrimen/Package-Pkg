@@ -3,7 +3,7 @@ package Package::Pkg::Loader;
 use strict;
 use warnings;
 
-use Any::Moose;
+use Mouse;
 
 use Package::Pkg;
 

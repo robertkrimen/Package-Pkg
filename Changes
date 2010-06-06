@@ -1,3 +1,8 @@
+0.0016 Saturday June 05 21:16:11 PDT 2010:
+    - Missed Any::Moose requirement (for Loader)
+    - Replaced Class::MOP with Mouse::Util
+    - Using Mouse proper instead of Any::Moose
+
 0.0015 Thursday June 03 09:24:33 PDT 2010:
     - Fixed bug with exporting <.* (modification of read-only value)
 

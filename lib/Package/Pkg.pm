@@ -78,14 +78,12 @@ L<Sub::Install>
 
 L<Sub::Exporter>
 
-L<Class::MOP>
-
 =cut
 
 use strict;
 use warnings;
 
-require Class::MOP;
+require Mouse::Util;
 require Sub::Install;
 use Try::Tiny;
 use Carp;
@@ -118,7 +116,7 @@ sub load_name {
     return $package;
 }
 
-sub _is_package_loaded ($) { return Class::MOP::is_class_loaded( $_[0] ) }
+sub _is_package_loaded ($) { return Mouse::Util::is_class_loaded( $_[0] ) }
 
 sub _package2pm ($) {
     my $package = shift;
@@ -137,7 +135,7 @@ sub loader {
 sub load {
     my $self = shift;
     my $package = @_ > 1 ? $self->name( @_ ) : $_[0];
-    return Class::MOP::load_class( $package );
+    return Mouse::Util::load_class( $package );
 }
 
 sub softload {
