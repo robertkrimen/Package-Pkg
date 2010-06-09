@@ -49,6 +49,128 @@ Package::Pkg is a collection of useful, miscellaneous package-munging utilities.
 
 Install a subroutine, similar to L<Sub::Install> (and actually using that module to do the dirty work)
 
+This method takes a number of parameters and also has a two- and three-argument form (see below)
+
+... parameters can be:
+
+    code    A subroutine reference, package/name identifier, or name
+            of a subroutine in the calling package
+
+    from    Optional. If 'code' is a simple name, then 'from' is the
+            source package. If not given, then 'from' is the same as
+            the calling package. If 'code' is a package/name, then
+            this parameter is ignored
+
+    into    A package identifier. If 'as' is given, then the full
+            name of the installed subroutine is <into>::<as>
+
+            If 'as' is not given and we can derive a simple name from
+            'code' (It is a package/name), then 'as' will take on the name
+            from 'code'
+            
+    as      The name of the subroutine to install as. Can be a simple name
+            (when paired with 'into') or a full package/name 
+
+For example:
+
+    # Install an anonymous subroutine as C<Banana::magic>
+    pkg->install( code => sub { ... } , as => 'Banana::magic' )
+    pkg->install( code => sub { ... } , into => 'Banana::magic' ) # Bzzzt! Throws an error!
+
+    # Install the subroutine C<Apple::xyzzy> as C<Banana::magic>
+    pkg->install( code => 'Apple::xyzzy', as => 'Banana::magic' )
+    pkg->install( code => 'Apple::xyzzy', into => 'Banana', as => 'magic' )
+    pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::magic' )
+    pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana', as => 'magic' )
+
+    # Install the subroutine C<Apple::xyzzy> as C<Banana::xyzzy>
+    pkg->install( code => 'Apple::xyzzy', as => 'Banana::xyzzy' )
+    pkg->install( code => 'Apple::xyzzy', into => 'Banana' )
+    pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
+    pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana' )
+    
+An example of implicit C<from>:
+
+    package Apple;
+
+    sub xyzzy { ... }
+
+    # Install the subroutine C<Apple::xyzzy> as C<Banana::xyzzy>
+    pkg->install( code => 'xyzzy', as => 'Banana::xyzzy' ) # 'from' is implicitly 'Apple'
+    pkg->install( code => \&xyzzy, as => 'Banana::xyzzy' )
+
+=head2 pkg->install( <code> => <into> )
+
+This is the two-argument form of subroutine installation
+
+Install <code> as a subroutine into <into>
+
+<code> should be:
+
+=over
+
+=item A CODE reference
+
+    sub { ... }
+
+=item A package/name identifier
+
+    Scalar::Util::blessed
+
+=item The name of a subroutine in the calling package
+
+    sub xyzzy { ... }
+
+    pkg->install( 'xyzzy' => ... )
+
+=back
+
+<into> should be:
+
+=over
+
+=item A package identifier (with a trailing ::)
+
+    Acme::Xyzzy::
+
+=item A package/name identifier
+
+    Acme::Xyzzy::magic
+
+=back
+
+=head2 pkg->install( <code> => <into>, <as> )
+
+This is the three-argument form of subroutine installation
+
+<code> can be the same as the two argument form
+
+<into> should be:
+
+=over
+
+=item A package identifier (trailing :: is optional)
+
+    Acme::Xyzzy::
+
+    Acme::Xyzzy
+
+=back
+
+<as> should be:
+
+=over
+
+=item A name (the name of the subroutine)
+
+    xyzzy
+
+    magic
+
+=back
+
+=cut
+
 =head2 $package = pkg->name( <part>, [ <part>, ..., <part> ] )
 
 Return a namespace composed by joining each <part> with C<::>
@@ -180,6 +302,7 @@ sub install {
         if ( defined $from )
             { die "Invalid code ($code) with from ($from)" if $code =~ m/::/ }
         elsif ( $code =~ m/::/)
+            $code =~ s/^<//; # Silently allow <Package::subroutine
             { ( $from, $code ) = $self->split2( $code ) }
         else                    
             { $from = caller }
@@ -189,13 +312,10 @@ sub install {
         die "Invalid as ($as) with into ($into)" if defined $into;
         ( $into, $as ) = $self->split2( $as );
     }
-    elsif ( defined $into && ! defined $as ) {
+    elsif ( defined $into ) {
         if ( $into =~ s/::$// ) { }
-        else {
-            ( $into, $as ) = $self->split2( $into );
-        }
     }
-    elsif ( defined $_into && ! defined $into ) {
+    elsif ( defined $_into ) {
         $into = $_into;
     }
 
@@ -220,7 +340,7 @@ sub split {
 sub split2 {
     my $self = shift;
     return unless my @split = $self->split( @_ );
-    return join '::', @split if 1 == @split;
+    return $split[0] if 1 == @split;
     my $name = pop @split;
     return( join( '::', @split ), $name );
 }
@@ -238,6 +358,7 @@ sub exporter {
     my ( %index, %group, $default_export );
     %group = ( default => [], optional => [], all => [] );
     $default_export = 1;
+
     while ( @_ ) {
         local $_ = shift;
         my ( $group, @install );
