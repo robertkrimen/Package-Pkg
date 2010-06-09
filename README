@@ -2,7 +2,7 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0016_2
+    version 0.0017
 
 SYNOPSIS
     First, import a new keyword: "pkg"
@@ -70,7 +70,7 @@ USAGE
         pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
         pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana' )
 
-    With implicit "from" (gotten via "caller()")
+    With implicit "from" (via "caller()")
 
         package Apple;
 
@@ -92,16 +92,16 @@ USAGE
                         If :code is an identifier and :from is not given, then :from
                         is assumed to be the calling package (via caller())
 
+        as              The name of the subroutine to install as. Can be a simple name
+                        (when paired with :into) or a full package-with-name 
+
         into (optional) A package identifier
                         If :as is given, then the full name of the installed
                         subroutine is (:into)::(:as)
 
                         If :as is not given and we can derive a simple name from
-                        :code: (It is a package-with-name identifier), then :as will be 
+                        :code (It is a package-with-name identifier), then :as will be 
                         the name identifier part of :code
-            
-        as              The name of the subroutine to install as. Can be a simple name
-                        (when paired with :into) or a full package-with-name
 
   pkg->install( $code => $as )
     This is the two-argument form of subroutine installation
@@ -122,7 +122,7 @@ USAGE
 
             sub { ... }
 
-    *   A package/name identifier
+    *   A package-with-name identifier
 
             Scalar::Util::blessed
 
@@ -134,13 +134,13 @@ USAGE
 
     $as should be:
 
+    *   A package-with-name identifier
+
+            Acme::Xyzzy::magic
+
     *   A package identifier (with a trailing ::)
 
             Acme::Xyzzy::
-
-    *   A package/name identifier
-
-            Acme::Xyzzy::magic
 
   pkg->install( $code => $into, $as )
     This is the three-argument form of subroutine installation

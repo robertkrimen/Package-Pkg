@@ -67,7 +67,7 @@ This method takes a number of parameters and also has a two- and three-argument 
     pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
     pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana' )
     
-With implicit C<from> (gotten via C<caller()>)
+With implicit C<from> (via C<caller()>)
 
     package Apple;
 
@@ -89,16 +89,17 @@ Acceptable parameters are:
                     If :code is an identifier and :from is not given, then :from
                     is assumed to be the calling package (via caller())
 
+    as              The name of the subroutine to install as. Can be a simple name
+                    (when paired with :into) or a full package-with-name 
+
     into (optional) A package identifier
                     If :as is given, then the full name of the installed
                     subroutine is (:into)::(:as)
 
                     If :as is not given and we can derive a simple name from
-                    :code: (It is a package-with-name identifier), then :as will be 
+                    :code (It is a package-with-name identifier), then :as will be 
                     the name identifier part of :code
             
-    as              The name of the subroutine to install as. Can be a simple name
-                    (when paired with :into) or a full package-with-name 
 
 =head2 pkg->install( $code => $as )
 
@@ -122,7 +123,7 @@ $code should be:
 
     sub { ... }
 
-=item * A package/name identifier
+=item * A package-with-name identifier
 
     Scalar::Util::blessed
 
@@ -138,13 +139,13 @@ $as should be:
 
 =over
 
+=item * A package-with-name identifier
+
+    Acme::Xyzzy::magic
+
 =item * A package identifier (with a trailing ::)
 
     Acme::Xyzzy::
-
-=item * A package/name identifier
-
-    Acme::Xyzzy::magic
 
 =back
 
@@ -311,10 +312,10 @@ sub install {
     my ( $from, $code, $into, $_into, $as, ) = @install{qw/ from code into _into as /};
     undef %install;
 
-    die "Missing code" unless defined $code;
+    die "Missing code (@_)" unless defined $code;
 
     if ( ref $code eq 'CODE' ) {
-        die "Invalid (superfluous) from ($from) with code reference" if defined $from;
+        die "Invalid (superfluous) from ($from) with code reference (@_)" if defined $from;
     }
     else {
         if ( defined $from )
@@ -339,7 +340,7 @@ sub install {
 
     if      ( defined $as ) {}
     elsif   ( ! ref $code ) { $as = $code }
-    else                    { die "Missing as" }
+    else                    { die "Missing as (@_)" }
 
     die "Missing into (@_)" unless defined $into;
 

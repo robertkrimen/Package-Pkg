@@ -1,3 +1,8 @@
+0.0017 Wednesday June 09 15:55:13 PDT 2010:
+    - Fleshed out ->install documentation
+    - Changed behavior of ->install to be sane and have saner documentation
+    - Added tests for ->install that reflect documentation
+
 0.0016 Saturday June 05 21:16:11 PDT 2010:
     - Missed Any::Moose requirement (for Loader)
     - Replaced Class::MOP with Mouse::Util
