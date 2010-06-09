@@ -99,11 +99,11 @@ An example of implicit C<from>:
     pkg->install( code => 'xyzzy', as => 'Banana::xyzzy' ) # 'from' is implicitly 'Apple'
     pkg->install( code => \&xyzzy, as => 'Banana::xyzzy' )
 
-=head2 pkg->install( <code> => <into> )
+=head2 pkg->install( <code> => <as> )
 
 This is the two-argument form of subroutine installation
 
-Install <code> as a subroutine into <into>
+Install <code> subroutine as <as>
 
 <code> should be:
 
@@ -125,7 +125,7 @@ Install <code> as a subroutine into <into>
 
 =back
 
-<into> should be:
+<as> should be:
 
 =over
 
@@ -286,7 +286,10 @@ sub install {
     my $self = shift;
     my %install;
     if      ( @_ == 1 ) { %install = %{ $_[0] } }
-    elsif   ( @_ == 2 ) { @install{qw/ code into /} = @_ }
+    elsif   ( @_ == 2 ) {
+        if ( $_[1] && $_[1] =~ m/::$/ ) { @install{qw/ code into /} = @_ }
+        else                            { @install{qw/ code as /} = @_ }
+    }
     elsif   ( @_ == 3 ) { @install{qw/ code into as /} = @_ }
     else                { %install = @_ }
 
@@ -301,11 +304,11 @@ sub install {
     else {
         if ( defined $from )
             { die "Invalid code ($code) with from ($from)" if $code =~ m/::/ }
-        elsif ( $code =~ m/::/)
+        elsif ( $code =~ m/::/) {
             $code =~ s/^<//; # Silently allow <Package::subroutine
-            { ( $from, $code ) = $self->split2( $code ) }
-        else                    
-            { $from = caller }
+            ( $from, $code ) = $self->split2( $code );
+        }
+        else { $from = caller }
     }
 
     if ( defined $as && $as =~ m/::/) {
@@ -323,7 +326,7 @@ sub install {
     elsif   ( ! ref $code ) { $as = $code }
     else                    { die "Missing as" }
 
-    die "Missing into" unless defined $into;
+    die "Missing into (@_)" unless defined $into;
 
     @install{qw/ code into as /} = ( $code, $into, $as );
     $install{from} = $from if defined $from;
@@ -350,7 +353,7 @@ sub export {
     my $exporter = $self->exporter( @_ );
 
     my $package = caller;
-    $self->install( code => $exporter, into => "${package}::import" );
+    $self->install( code => $exporter, as => "${package}::import" );
 }
 
 sub exporter {
