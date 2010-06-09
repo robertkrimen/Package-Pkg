@@ -47,7 +47,7 @@ Package::Pkg is a collection of useful, miscellaneous package-munging utilities.
 
 =head2 pkg->install( ... )
 
-Install a subroutine, similar to L<Sub::Install> (and actually using that module to do the dirty work)
+Install a subroutine, similar to L<Sub::Install>
 
 This method takes a number of parameters and also has a two- and three-argument form (see below)
 
@@ -73,17 +73,17 @@ This method takes a number of parameters and also has a two- and three-argument 
 
 For example:
 
-    # Install an anonymous subroutine as C<Banana::magic>
+    # Install an anonymous subroutine as Banana::magic
     pkg->install( code => sub { ... } , as => 'Banana::magic' )
     pkg->install( code => sub { ... } , into => 'Banana::magic' ) # Bzzzt! Throws an error!
 
-    # Install the subroutine C<Apple::xyzzy> as C<Banana::magic>
+    # Install the subroutine Apple::xyzzy as Banana::magic
     pkg->install( code => 'Apple::xyzzy', as => 'Banana::magic' )
     pkg->install( code => 'Apple::xyzzy', into => 'Banana', as => 'magic' )
     pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::magic' )
     pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana', as => 'magic' )
 
-    # Install the subroutine C<Apple::xyzzy> as C<Banana::xyzzy>
+    # Install the subroutine Apple::xyzzy as Banana::xyzzy
     pkg->install( code => 'Apple::xyzzy', as => 'Banana::xyzzy' )
     pkg->install( code => 'Apple::xyzzy', into => 'Banana' )
     pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
@@ -95,7 +95,7 @@ An example of implicit C<from>:
 
     sub xyzzy { ... }
 
-    # Install the subroutine C<Apple::xyzzy> as C<Banana::xyzzy>
+    # Install the subroutine Apple::xyzzy as Banana::xyzzy
     pkg->install( code => 'xyzzy', as => 'Banana::xyzzy' ) # 'from' is implicitly 'Apple'
     pkg->install( code => \&xyzzy, as => 'Banana::xyzzy' )
 
@@ -139,6 +139,11 @@ Install <code> subroutine as <as>
 
 =back
 
+    pkg->install( sub { ... } => 'Banana::xyzzy' )
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::xyzzy' )
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::' )
+    pkg->install( sub { ... } => 'Banana::' ) # Bzzzt! Throws an error!
+
 =head2 pkg->install( <code> => <into>, <as> )
 
 This is the three-argument form of subroutine installation
@@ -169,7 +174,10 @@ This is the three-argument form of subroutine installation
 
 =back
 
-=cut
+    pkg->install( sub { ... } => 'Banana', 'xyzzy' )
+    pkg->install( sub { ... } => 'Banana::', 'xyzzy' )
+    pkg->install( 'Scalar::Util::blessed' => 'Banana', 'xyzzy' )
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::', 'xyzzy' )
 
 =head2 $package = pkg->name( <part>, [ <part>, ..., <part> ] )
 

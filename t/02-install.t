@@ -92,3 +92,40 @@ is( Apple::grape1->grape, 'grape' );
     is( \&Apple::xyzzy, \&Banana::xyzzy );
     *Banana::xyzzy = sub {};
 }
+
+{
+    no warnings 'redefine';
+    my $code = sub {};
+
+    *Banana::xyzzy = sub {};
+    pkg->install( $code => 'Banana::xyzzy' );
+    is( $code, \&Banana::xyzzy );
+
+    *Banana::xyzzy = sub {};
+    pkg->install( 'Apple::apple' => 'Banana::xyzzy' );
+    is( \&Apple::apple, \&Banana::xyzzy );
+
+    pkg->install( 'Apple::apple' => 'Banana::' );
+    throws_ok { pkg->install( $code => 'Banana::' ) } qr/^Missing as/;
+}
+
+{
+    no warnings 'redefine';
+    my $code = sub {};
+
+    *Banana::xyzzy = sub {};
+    pkg->install( $code => 'Banana', 'xyzzy' );
+    is( $code, \&Banana::xyzzy );
+
+    *Banana::xyzzy = sub {};
+    pkg->install( $code => 'Banana::', 'xyzzy' );
+    is( $code, \&Banana::xyzzy );
+
+    *Banana::xyzzy = sub {};
+    pkg->install( 'Apple::apple' => 'Banana', 'xyzzy' );
+    is( \&Apple::apple, \&Banana::xyzzy );
+
+    *Banana::xyzzy = sub {};
+    pkg->install( 'Apple::apple' => 'Banana::', 'xyzzy' );
+    is( \&Apple::apple, \&Banana::xyzzy );
+}

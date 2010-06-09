@@ -2,7 +2,7 @@ NAME
     Package::Pkg - Handy package munging utilities
 
 VERSION
-    version 0.0016
+    version 0.0016_1
 
 SYNOPSIS
     First, import a new keyword: "pkg"
@@ -49,8 +49,113 @@ DESCRIPTION
 
 USAGE
   pkg->install( ... )
-    Install a subroutine, similar to Sub::Install (and actually using that
-    module to do the dirty work)
+    Install a subroutine, similar to Sub::Install
+
+    This method takes a number of parameters and also has a two- and
+    three-argument form (see below)
+
+    ... parameters can be:
+
+        code    A subroutine reference, package/name identifier, or name
+                of a subroutine in the calling package
+
+        from    Optional. If 'code' is a simple name, then 'from' is the
+                source package. If not given, then 'from' is the same as
+                the calling package. If 'code' is a package/name, then
+                this parameter is ignored
+
+        into    A package identifier. If 'as' is given, then the full
+                name of the installed subroutine is <into>::<as>
+
+                If 'as' is not given and we can derive a simple name from
+                'code' (It is a package/name), then 'as' will take on the name
+                from 'code'
+            
+        as      The name of the subroutine to install as. Can be a simple name
+                (when paired with 'into') or a full package/name
+
+    For example:
+
+        # Install an anonymous subroutine as Banana::magic
+        pkg->install( code => sub { ... } , as => 'Banana::magic' )
+        pkg->install( code => sub { ... } , into => 'Banana::magic' ) # Bzzzt! Throws an error!
+
+        # Install the subroutine Apple::xyzzy as Banana::magic
+        pkg->install( code => 'Apple::xyzzy', as => 'Banana::magic' )
+        pkg->install( code => 'Apple::xyzzy', into => 'Banana', as => 'magic' )
+        pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::magic' )
+        pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana', as => 'magic' )
+
+        # Install the subroutine Apple::xyzzy as Banana::xyzzy
+        pkg->install( code => 'Apple::xyzzy', as => 'Banana::xyzzy' )
+        pkg->install( code => 'Apple::xyzzy', into => 'Banana' )
+        pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
+        pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana' )
+
+    An example of implicit "from":
+
+        package Apple;
+
+        sub xyzzy { ... }
+
+        # Install the subroutine Apple::xyzzy as Banana::xyzzy
+        pkg->install( code => 'xyzzy', as => 'Banana::xyzzy' ) # 'from' is implicitly 'Apple'
+        pkg->install( code => \&xyzzy, as => 'Banana::xyzzy' )
+
+  pkg->install( <code> => <as> )
+    This is the two-argument form of subroutine installation
+
+    Install <code> subroutine as <as>
+
+    <code> should be:
+
+    A CODE reference
+            sub { ... }
+
+    A package/name identifier
+            Scalar::Util::blessed
+
+    The name of a subroutine in the calling package
+            sub xyzzy { ... }
+
+            pkg->install( 'xyzzy' => ... )
+
+    <as> should be:
+
+    A package identifier (with a trailing ::)
+            Acme::Xyzzy::
+
+    A package/name identifier
+            Acme::Xyzzy::magic
+
+        pkg->install( sub { ... } => 'Banana::xyzzy' )
+        pkg->install( 'Scalar::Util::blessed' => 'Banana::xyzzy' )
+        pkg->install( 'Scalar::Util::blessed' => 'Banana::' )
+        pkg->install( sub { ... } => 'Banana::' ) # Bzzzt! Throws an error!
+
+  pkg->install( <code> => <into>, <as> )
+    This is the three-argument form of subroutine installation
+
+    <code> can be the same as the two argument form
+
+    <into> should be:
+
+    A package identifier (trailing :: is optional)
+            Acme::Xyzzy::
+
+            Acme::Xyzzy
+
+    <as> should be:
+
+    A name (the name of the subroutine)
+            xyzzy
+
+            magic
+
+        pkg->install( sub { ... } => 'Banana', 'xyzzy' )
+        pkg->install( sub { ... } => 'Banana::', 'xyzzy' )
+        pkg->install( 'Scalar::Util::blessed' => 'Banana', 'xyzzy' )
+        pkg->install( 'Scalar::Util::blessed' => 'Banana::', 'xyzzy' )
 
   $package = pkg->name( <part>, [ <part>, ..., <part> ] )
     Return a namespace composed by joining each <part> with "::"
