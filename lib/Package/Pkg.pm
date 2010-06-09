@@ -51,28 +51,6 @@ Install a subroutine, similar to L<Sub::Install>
 
 This method takes a number of parameters and also has a two- and three-argument form (see below)
 
-... parameters can be:
-
-    code    A subroutine reference, package/name identifier, or name
-            of a subroutine in the calling package
-
-    from    Optional. If 'code' is a simple name, then 'from' is the
-            source package. If not given, then 'from' is the same as
-            the calling package. If 'code' is a package/name, then
-            this parameter is ignored
-
-    into    A package identifier. If 'as' is given, then the full
-            name of the installed subroutine is <into>::<as>
-
-            If 'as' is not given and we can derive a simple name from
-            'code' (It is a package/name), then 'as' will take on the name
-            from 'code'
-            
-    as      The name of the subroutine to install as. Can be a simple name
-            (when paired with 'into') or a full package/name 
-
-For example:
-
     # Install an anonymous subroutine as Banana::magic
     pkg->install( code => sub { ... } , as => 'Banana::magic' )
     pkg->install( code => sub { ... } , into => 'Banana::magic' ) # Bzzzt! Throws an error!
@@ -89,7 +67,7 @@ For example:
     pkg->install( from => 'Apple', code => 'xyzzy', as => 'Banana::xyzzy' )
     pkg->install( from => 'Apple', code => 'xyzzy', into => 'Banana' )
     
-An example of implicit C<from>:
+With implicit C<from> (gotten via C<caller()>)
 
     package Apple;
 
@@ -99,25 +77,56 @@ An example of implicit C<from>:
     pkg->install( code => 'xyzzy', as => 'Banana::xyzzy' ) # 'from' is implicitly 'Apple'
     pkg->install( code => \&xyzzy, as => 'Banana::xyzzy' )
 
-=head2 pkg->install( <code> => <as> )
+Acceptable parameters are:
+
+    code            A subroutine reference,
+                    A package-with-name identifier, or
+                    The name of a subroutine in the calling package
+
+    from (optional) A package identifier
+                    If :code is an identifier, then :from is the package where
+                    the subroutine can be found
+                    If :code is an identifier and :from is not given, then :from
+                    is assumed to be the calling package (via caller())
+
+    into (optional) A package identifier
+                    If :as is given, then the full name of the installed
+                    subroutine is (:into)::(:as)
+
+                    If :as is not given and we can derive a simple name from
+                    :code: (It is a package-with-name identifier), then :as will be 
+                    the name identifier part of :code
+            
+    as              The name of the subroutine to install as. Can be a simple name
+                    (when paired with :into) or a full package-with-name 
+
+=head2 pkg->install( $code => $as )
 
 This is the two-argument form of subroutine installation
 
-Install <code> subroutine as <as>
+Install $code subroutine as $as
 
-<code> should be:
+    pkg->install( sub { ... } => 'Banana::xyzzy' )
+
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::xyzzy' )
+
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::' )
+
+    pkg->install( sub { ... } => 'Banana::' ) # Bzzzt! Throws an error!
+
+$code should be:
 
 =over
 
-=item A CODE reference
+=item * A CODE reference
 
     sub { ... }
 
-=item A package/name identifier
+=item * A package/name identifier
 
     Scalar::Util::blessed
 
-=item The name of a subroutine in the calling package
+=item * The name of a subroutine in the calling package
 
     sub xyzzy { ... }
 
@@ -125,36 +134,39 @@ Install <code> subroutine as <as>
 
 =back
 
-<as> should be:
+$as should be:
 
 =over
 
-=item A package identifier (with a trailing ::)
+=item * A package identifier (with a trailing ::)
 
     Acme::Xyzzy::
 
-=item A package/name identifier
+=item * A package/name identifier
 
     Acme::Xyzzy::magic
 
 =back
 
-    pkg->install( sub { ... } => 'Banana::xyzzy' )
-    pkg->install( 'Scalar::Util::blessed' => 'Banana::xyzzy' )
-    pkg->install( 'Scalar::Util::blessed' => 'Banana::' )
-    pkg->install( sub { ... } => 'Banana::' ) # Bzzzt! Throws an error!
-
-=head2 pkg->install( <code> => <into>, <as> )
+=head2 pkg->install( $code => $into, $as )
 
 This is the three-argument form of subroutine installation
 
-<code> can be the same as the two argument form
+    pkg->install( sub { ... } => 'Banana', 'xyzzy' )
 
-<into> should be:
+    pkg->install( sub { ... } => 'Banana::', 'xyzzy' )
+
+    pkg->install( 'Scalar::Util::blessed' => 'Banana', 'xyzzy' )
+
+    pkg->install( 'Scalar::Util::blessed' => 'Banana::', 'xyzzy' )
+
+$code can be the same as the two argument form
+
+$into should be:
 
 =over
 
-=item A package identifier (trailing :: is optional)
+=item * A package identifier (trailing :: is optional)
 
     Acme::Xyzzy::
 
@@ -162,11 +174,11 @@ This is the three-argument form of subroutine installation
 
 =back
 
-<as> should be:
+$as should be:
 
 =over
 
-=item A name (the name of the subroutine)
+=item * A name (the name of the subroutine)
 
     xyzzy
 
@@ -174,14 +186,9 @@ This is the three-argument form of subroutine installation
 
 =back
 
-    pkg->install( sub { ... } => 'Banana', 'xyzzy' )
-    pkg->install( sub { ... } => 'Banana::', 'xyzzy' )
-    pkg->install( 'Scalar::Util::blessed' => 'Banana', 'xyzzy' )
-    pkg->install( 'Scalar::Util::blessed' => 'Banana::', 'xyzzy' )
+=head2 $package = pkg->name( $part, [ $part, ..., $part ] )
 
-=head2 $package = pkg->name( <part>, [ <part>, ..., <part> ] )
-
-Return a namespace composed by joining each <part> with C<::>
+Return a namespace composed by joining each $part with C<::>
 
 Superfluous/redundant C<::> are automatically cleaned up and stripped from the resulting $package
 
