@@ -1,3 +1,7 @@
+0.0018 Thursday June 10 22:00:39 PDT 2010:
+    - Added ::Lexicon & ->lexicon
+    - Remove "Subroutine * redefined" during t/02-install.t
+
 0.0017 Wednesday June 09 15:55:13 PDT 2010:
     - Fleshed out ->install documentation
     - Changed behavior of ->install to be sane and have saner documentation
