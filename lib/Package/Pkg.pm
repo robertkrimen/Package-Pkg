@@ -263,6 +263,14 @@ sub _package2pm ($) {
     return $pm;
 }
 
+sub lexicon {
+    my $self = shift;
+    require Package::Pkg::Lexicon;
+    my $lexicon = Package::Pkg::Lexicon->new;
+    $lexicon->add( @_ ) if @_;
+    return $lexicon;
+}
+
 sub loader {
     my $self = shift;
     require Package::Pkg::Loader;

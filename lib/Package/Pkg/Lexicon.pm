@@ -41,8 +41,6 @@ sub copy {
 
 sub add {
     my $self = shift;
-    my $name = shift;
-    my $subroutine = shift;
 
     die "Missing name & subroutine" unless @_;
 
@@ -50,7 +48,7 @@ sub add {
         my $name = shift;
         my $subroutine = shift;
         next unless defined $name and defined $subroutine;
-        die "Invalid name ($name)" unless $name =~ m/^\w$/;
+        die "Invalid name ($name)" unless $name =~ m/^\w+$/;
         die "Invalid subroutine ($subroutine)" unless ref $subroutine eq 'CODE';
         $self->lexicon->{$name} = $subroutine;
     }
