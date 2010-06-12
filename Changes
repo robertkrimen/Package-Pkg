@@ -1,3 +1,6 @@
+0.0019 Friday June 11 23:32:55 PDT 2010:
+    - Added Clone prerequisite
+
 0.0018 Thursday June 10 22:00:39 PDT 2010:
     - Added ::Lexicon & ->lexicon
     - Remove "Subroutine * redefined" during t/02-install.t

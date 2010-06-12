@@ -1,11 +1,12 @@
 #!/usr/bin/env perl
 use Dzpl
     name => 'Package-Pkg',
-    version => '0.0018',
+    version => '0.0019',
     author => 'Robert Krimen <robertkrimen@gmail.com>',
     license => 'Perl5',
     copyright => 'Robert Krimen',
     require => q/
+        Clone
         Mouse
         Sub::Install
         Try::Tiny
