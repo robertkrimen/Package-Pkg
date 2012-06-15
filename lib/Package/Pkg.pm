@@ -221,7 +221,7 @@ L<Sub::Exporter>
 use strict;
 use warnings;
 
-require Mouse::Util;
+use Class::Load ':all';
 require Sub::Install;
 use Try::Tiny;
 use Carp;
@@ -254,7 +254,7 @@ sub load_name {
     return $package;
 }
 
-sub _is_package_loaded ($) { return Mouse::Util::is_class_loaded( $_[0] ) }
+sub _is_package_loaded ($) { return is_class_loaded( $_[0] ) }
 
 sub _package2pm ($) {
     my $package = shift;
